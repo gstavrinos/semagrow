@@ -89,7 +89,8 @@ public class SemagrowSail extends AbstractSail {
         selector = new RestrictiveSourceSelector(selector, includeOnly, exclude);
         CostEstimatorResolver costEstimatorResolver = getCostEstimatorResolver();
         CardinalityEstimatorResolver cardinalityEstimatorResolver = getCardinalityEstimatorResolver();
-        return new DPQueryDecomposer(costEstimatorResolver, cardinalityEstimatorResolver, selector);
+        //return new DPQueryDecomposer(costEstimatorResolver, cardinalityEstimatorResolver, selector);
+        return new org.semagrow.plan.querygraph.QueryGraphDecomposer(costEstimatorResolver, cardinalityEstimatorResolver, selector);
     }
 
     public SourceSelector getSourceSelector() { return sourceSelector; }

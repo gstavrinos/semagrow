@@ -217,7 +217,7 @@ public class SimplePlanGenerator implements PlanGenerator, PlanGenerationContext
         //return createPlan(e.getKey(), expr);
     }
 
-    private Set<TupleExpr> getKey(Set<TupleExpr> id1, Set<TupleExpr> id2) {
+    protected Set<TupleExpr> getKey(Set<TupleExpr> id1, Set<TupleExpr> id2) {
         Set<TupleExpr> s = new HashSet<TupleExpr>(id1);
         s.addAll(id2);
         return s;
@@ -278,13 +278,15 @@ public class SimplePlanGenerator implements PlanGenerator, PlanGenerationContext
         plan.setProperties(properties);
 
         // update cardinality and cost properties
+        cardinalityEstimatorResolver.resolve(plan.getProperties().getSite()).ifPresent(cardinalityEstimator -> {
+            properties.setCardinality(cardinalityEstimator.getCardinality(e));
+        });
+
         costEstimatorResolver.resolve(plan.getProperties().getSite()).ifPresent(costEstimator -> {
             properties.setCost(costEstimator.getCost(e));
         });
 
-        cardinalityEstimatorResolver.resolve(plan.getProperties().getSite()).ifPresent(cardinalityEstimator -> {
-            properties.setCardinality(cardinalityEstimator.getCardinality(e));
-        });
+
 
         plan.setProperties(properties);
 

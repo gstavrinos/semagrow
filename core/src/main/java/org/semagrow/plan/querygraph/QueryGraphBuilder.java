@@ -3,6 +3,7 @@ package org.semagrow.plan.querygraph;
 
 import org.eclipse.rdf4j.query.algebra.*;
 import org.eclipse.rdf4j.query.algebra.helpers.AbstractQueryModelVisitor;
+import org.semagrow.algebra.TupleExprs;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +14,7 @@ import java.util.Set;
  */
 public class QueryGraphBuilder extends AbstractQueryModelVisitor<RuntimeException> {
 
+    /* statements grouped by variable */
     private HashMap<String, Set<StatementPattern>> varMap = new HashMap<>();
 
     private QueryGraph graph;
@@ -35,23 +37,25 @@ public class QueryGraphBuilder extends AbstractQueryModelVisitor<RuntimeExceptio
 
         join.getLeftArg().visit(this);
 
+        /* statement patterns that are on the left of the join and have vars in joinVars (i.e. with the right subtree) */
         for (String v : joinVars)
             left.put(v, new HashSet<StatementPattern>(varMap.get(v)));
 
         Set<TupleExpr> leftTab = new HashSet<TupleExpr>(tab);
         this.tab = new HashSet<>();
-        Set<TupleExpr> rightTab = new HashSet<TupleExpr>(tab);
-        leftTab.addAll(rightTab);
-        this.tab = leftTab;
 
         join.getRightArg().visit(this);
 
+        Set<TupleExpr> rightTab = new HashSet<TupleExpr>(tab);
+        leftTab.addAll(rightTab);
+        this.tab = leftTab;  // tab contain the union of rightTab and leftTab.
 
         for (String v : joinVars) {
             Set<StatementPattern> s = new HashSet<StatementPattern>(varMap.get(v));
             s.removeAll(left.get(v));
             right.put(v, s);
         }
+        // right has all the statement patterns per common variable except the ones that are on the left.
 
         for (String v : joinVars) {
             for (StatementPattern p1 : left.get(v))
@@ -70,42 +74,15 @@ public class QueryGraphBuilder extends AbstractQueryModelVisitor<RuntimeExceptio
         }
     }
 
-    private void mergeMap(HashMap<String, Set<StatementPattern>> oldVarMap,
-                          HashMap<String, Set<StatementPattern>> varMap)
-    {
-        for (String v : varMap.keySet())
-        {
-            Set<StatementPattern> s = oldVarMap.get(v);
-
-            if (s != null) {
-                s.addAll(varMap.getOrDefault(v, new HashSet<StatementPattern>()));
-            } else {
-                s = varMap.get(v);
-            }
-
-            if (s != null) {
-                oldVarMap.put(v, s);
-            }
-
-        }
-    }
-
     @Override
     public void meet(Filter filter) {
         filter.getArg().visit(this);
     }
 
-    private Set<String> commonVarNames(TupleExpr leftArg, TupleExpr rightArg) {
-        Set<String> leftVars = leftArg.getBindingNames();
-        Set<String> rightVars = rightArg.getBindingNames();
-        leftVars.retainAll(rightVars);
-        return leftVars;
-    }
-
     @Override
     public void meet(StatementPattern pattern) {
 
-        Set<String> varNames = pattern.getBindingNames();
+        Set<String> varNames = TupleExprs.getFreeVariables(pattern);
 
         for (String varName : varNames) {
             Set<StatementPattern> s = varMap.getOrDefault(varName, new HashSet<StatementPattern>());
@@ -181,11 +158,37 @@ public class QueryGraphBuilder extends AbstractQueryModelVisitor<RuntimeExceptio
         }
     }
 
-
     public static QueryGraph build(TupleExpr expr) {
         QueryGraphBuilder builder = new QueryGraphBuilder();
         expr.visit(builder);
         return builder.graph;
+    }
+
+    private Set<String> commonVarNames(TupleExpr leftArg, TupleExpr rightArg) {
+        Set<String> leftVars  = TupleExprs.getFreeVariables(leftArg);
+        Set<String> rightVars = TupleExprs.getFreeVariables(rightArg);
+        leftVars.retainAll(rightVars);
+        return leftVars;
+    }
+
+    private void mergeMap(HashMap<String, Set<StatementPattern>> oldVarMap,
+                          HashMap<String, Set<StatementPattern>> varMap)
+    {
+        for (String v : varMap.keySet())
+        {
+            Set<StatementPattern> s = oldVarMap.get(v);
+
+            if (s != null) {
+                s.addAll(varMap.getOrDefault(v, new HashSet<StatementPattern>()));
+            } else {
+                s = varMap.get(v);
+            }
+
+            if (s != null) {
+                oldVarMap.put(v, s);
+            }
+
+        }
     }
 
 }
