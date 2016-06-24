@@ -13,7 +13,7 @@ import java.util.*;
  * search for an optimal plan with respect to a CostEstimator
  * @author Angelos Charalambidis
  */
-public class DPPlanOptimizer implements PlanOptimizer
+public class DPPlanOptimizer
 {
 
     final private org.slf4j.Logger logger =
@@ -133,7 +133,7 @@ public class DPPlanOptimizer implements PlanOptimizer
     /**
      * Returns the best plan out of a collection of plans
      * @param plans a collection of equivalent plans
-     * @return the prefered plan
+     * @return the preferred plan
      */
     private Optional<Plan> getBestPlan(Collection<Plan> plans)
     {

@@ -169,7 +169,6 @@ public class SimplePlanGenerator implements PlanGenerator, PlanGenerationContext
         }
     }
 
-
     public Plan applyRemainingFilters(Plan e, Collection<ValueExpr> conditions) {
         Collection<ValueExpr> filtersApplied = FilterCollector.process(e);
         Collection<ValueExpr> remainingFilters = getRelevantFiltersConditions(e, conditions);
@@ -217,6 +216,19 @@ public class SimplePlanGenerator implements PlanGenerator, PlanGenerationContext
         //return createPlan(e.getKey(), expr);
     }
 
+    public Plan createUnionPlan(List<Plan> plans)
+    {
+        Site s = LocalSite.getInstance();
+        Optional<Plan> unionedPlan = plans.stream()
+                .reduce( (p1,p2)-> create(p2.getKey(), new Union(enforce(p1,s), enforce(p2,s))));
+
+        if (unionedPlan.isPresent())
+            return unionedPlan.get();
+        else
+            throw new AssertionError("the list of plans is empty in createUnionPlan");
+    }
+
+
     protected Set<TupleExpr> getKey(Set<TupleExpr> id1, Set<TupleExpr> id2) {
         Set<TupleExpr> s = new HashSet<TupleExpr>(id1);
         s.addAll(id2);
@@ -238,18 +250,6 @@ public class SimplePlanGenerator implements PlanGenerator, PlanGenerationContext
         //return p;
     }
 
-
-    public Plan createUnionPlan(List<Plan> plans)
-    {
-        Site s = LocalSite.getInstance();
-        Optional<Plan> unionedPlan = plans.stream()
-                .reduce( (p1,p2)-> create(p2.getKey(), new Union(enforce(p1,s), enforce(p2,s))));
-
-        if (unionedPlan.isPresent())
-            return unionedPlan.get();
-        else
-            throw new AssertionError("the list of plans is empty in createUnionPlan");
-    }
 
     /**
      * Update the properties of a plan
@@ -307,15 +307,7 @@ public class SimplePlanGenerator implements PlanGenerator, PlanGenerationContext
 
         Plan p = new Plan(planId, innerExpr);
         p.setProperties(SimplePlanProperties.defaultProperties());
-        Set<String> varNames = innerExpr.getBindingNames();
 
-        /*
-        for (String varName : varNames) {
-            Collection<URI> schemas = metadata.getSchema(varName);
-            if (!schemas.isEmpty())
-                p.setSchemas(varName, schemas);
-        }
-        */
         p.getProperties().setSite(site);
         updatePlan(p);
 
