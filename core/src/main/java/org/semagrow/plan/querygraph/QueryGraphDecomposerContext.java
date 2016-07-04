@@ -12,7 +12,7 @@ public class QueryGraphDecomposerContext extends DecomposerContext {
 
     protected QueryGraphDecomposerContext(TupleExpr expr) {
         super(expr);
-        graph = QueryGraphBuilder.build(expr);
+        graph = QueryGraph.create(expr);
     }
 
     public QueryGraph getQueryGraph() { return graph; }

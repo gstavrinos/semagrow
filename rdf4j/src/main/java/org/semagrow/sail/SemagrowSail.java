@@ -6,7 +6,6 @@ import org.semagrow.estimator.SelectivityEstimatorResolver;
 import org.semagrow.estimator.CostEstimatorResolver;
 import org.semagrow.evaluation.file.FileManager;
 import org.semagrow.evaluation.file.MaterializationManager;
-import org.semagrow.plan.DPQueryDecomposer;
 import org.semagrow.selector.RestrictiveSourceSelector;
 import org.semagrow.selector.SourceSelector;
 import org.semagrow.querylog.api.QueryLogException;

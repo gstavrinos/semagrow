@@ -12,6 +12,12 @@
 
   <name>SemaGrow RDF4J Repository</name>
   <dependencies>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>semagrow-connector-sparql</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+      </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>semagrow-core</artifactId>

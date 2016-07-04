@@ -1,32 +1,23 @@
 package org.semagrow.plan;
 
-import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.query.algebra.QueryModelVisitor;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.algebra.UnaryTupleOperator;
-
-import java.util.*;
 
 /**
  * Created by angel on 9/30/14.
  */
 public class Plan extends UnaryTupleOperator {
 
-    private Set<TupleExpr> id;
-
-    private Map<String, Collection<IRI>> schemas = new HashMap<String, Collection<IRI>>();
-
     private PlanProperties properties;
 
     //public Plan(TupleExpr arg) { super(arg); }
 
-    public Plan(Set<TupleExpr> id, TupleExpr arg) {
+    public Plan(TupleExpr arg) {
         super(arg);
-        this.id = id;
+
         //properties = SimplePlanProperties.defaultProperties();
     }
-
-    public Set<TupleExpr> getKey() { return this.id; }
 
     public PlanProperties getProperties() { return properties; }
 
@@ -46,11 +37,6 @@ public class Plan extends UnaryTupleOperator {
         sb.append(", card=" + getProperties().getCardinality());
         sb.append(", site=" + getProperties().getSite() +")");
         return sb.toString();
-    }
-
-    public static Plan create(Set<TupleExpr> key, TupleExpr expr) {
-        Plan p = new Plan(key, expr);
-        return p;
     }
 
 }

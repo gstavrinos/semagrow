@@ -7,18 +7,8 @@ import org.eclipse.rdf4j.query.algebra.TupleExpr;
  */
 public interface PlanFactory {
 
-    Plan create(TupleExpr id, TupleExpr expr);
+    Plan create(TupleExpr physicalExpr);
 
-    Plan create(TupleExpr expr);
-
-    /**
-     * Create a plan from an expression and a set of initial properties
-     * @param expr
-     * @param props
-     * @return
-     */
-    Plan create(TupleExpr id, TupleExpr expr, PlanProperties props);
-
-    Plan create(TupleExpr expr, PlanProperties props);
+    Plan create(TupleExpr physicalExpr, PlanProperties props);
 
 }
