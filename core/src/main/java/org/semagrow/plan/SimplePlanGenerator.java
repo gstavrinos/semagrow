@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 
 
 /**
- * The default implementation of the @{link PlanGenerator}
- * @author Angelos Charalambidis
+ * The default implementation of the {@link PlanGenerator}
+ * @author acharal
  */
 public class SimplePlanGenerator implements PlanGenerator, PlanGenerationContext {
 

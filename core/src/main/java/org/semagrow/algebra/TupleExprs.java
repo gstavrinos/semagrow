@@ -8,10 +8,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by angel on 23/6/2016.
+ * A set of various utility functions concerning {@link TupleExpr}s
+ * @author acharal
  */
 public class TupleExprs {
 
+    /**
+     * Computes the set of the unbounded variables of a {@link TupleExpr}
+     * @param expr a tuple expression
+     * @return a set of variable names
+     */
     public static Set<String> getFreeVariables(TupleExpr expr){
         final Set<String> res = new HashSet<String>();
         expr.visit(new AbstractQueryModelVisitor<RuntimeException>() {

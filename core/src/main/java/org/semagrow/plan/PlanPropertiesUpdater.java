@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * A PlanVisitor that traverses the execution plan tree and updates
  * the properties derived by the operator specifications
- * @author Angelos Charalambidis
+ * @author acharal
  */
 public class PlanPropertiesUpdater extends PlanVisitorBase<RuntimeException> {
 

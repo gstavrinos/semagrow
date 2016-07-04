@@ -7,11 +7,14 @@ import org.semagrow.selector.Site;
 
 
 /**
- * Created by angel on 24/6/2016.
+ * The default implementation of a {@link PlanFactory}
+ * @author acharal
+ * @since 2.0
  */
 public class SimplePlanFactory implements PlanFactory {
 
     private final CostEstimatorResolver costEstimatorResolver;
+
     private final CardinalityEstimatorResolver cardinalityEstimatorResolver;
 
     public SimplePlanFactory(CostEstimatorResolver costEstimatorResolver,

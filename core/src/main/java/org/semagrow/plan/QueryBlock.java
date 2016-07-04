@@ -4,6 +4,7 @@ import org.eclipse.rdf4j.query.algebra.QueryModelNode;
 import org.eclipse.rdf4j.query.algebra.QueryModelVisitor;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.algebra.helpers.AbstractQueryModelVisitor;
+import org.eclipse.rdf4j.query.algebra.helpers.QueryModelTreePrinter;
 
 import java.util.Set;
 
@@ -69,6 +70,13 @@ public class QueryBlock implements TupleExpr {
     @Override
     public String getSignature() {
         return "QueryBlock";
+    }
+
+    @Override
+    public String toString() {
+        QueryModelTreePrinter treePrinter = new QueryModelTreePrinter();
+        this.visit(treePrinter);
+        return treePrinter.getTreeString();
     }
 
     @Override

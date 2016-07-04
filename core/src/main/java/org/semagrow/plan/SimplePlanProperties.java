@@ -5,10 +5,10 @@ import org.semagrow.local.LocalSite;
 import org.semagrow.selector.Site;
 
 /**
- * A structure that contains the @{link Plan} properties needed
+ * A structure that contains the {@link Plan} properties needed
  * by the {@link PlanOptimizer}.
  *
- * @author Angelos Charalambidis
+ * @author acharal
  */
 public class SimplePlanProperties implements PlanProperties {
 

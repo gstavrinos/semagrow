@@ -10,7 +10,9 @@ import org.eclipse.rdf4j.query.algebra.evaluation.util.QueryOptimizerList;
 import org.eclipse.rdf4j.query.algebra.helpers.AbstractQueryModelVisitor;
 
 /**
- * Created by angel on 30/6/2016.
+ * The default implementation of a {@link QueryPlanner}
+ * @author acharal
+ * @since 2.0
  */
 public class SimpleQueryPlanner implements QueryPlanner {
 
@@ -21,10 +23,11 @@ public class SimpleQueryPlanner implements QueryPlanner {
         rewrite(query.getArg(), dataset, bindings);
 
         // split query to queryblocks.
-        blockify(query, dataset, bindings);
+        QueryBlock blockRoot = blockify(query, dataset, bindings);
 
         // infer interesting properties for each query block.
-        // compile each block and substitute each block with its respective plan.
+
+        // traverse Blocks and compile them bottom-up.
 
         return null;
     }
@@ -36,7 +39,7 @@ public class SimpleQueryPlanner implements QueryPlanner {
      * @param dataset
      * @param bindings possible bindings for some of the variables in the expression.
      */
-    public void rewrite(TupleExpr expr, Dataset dataset, BindingSet bindings) {
+    protected void rewrite(TupleExpr expr, Dataset dataset, BindingSet bindings) {
 
         assert expr.getParentNode() != null;
 
@@ -52,14 +55,18 @@ public class SimpleQueryPlanner implements QueryPlanner {
         queryOptimizer.optimize(expr, dataset, bindings);
     }
 
-    public void blockify(QueryRoot expr, Dataset dataset, BindingSet bindings) {
+    protected QueryBlock blockify(QueryRoot expr, Dataset dataset, BindingSet bindings) {
+        QueryBlockifier queryBlockifier = new QueryBlockifier();
         try {
-            expr.visit(new QueryBlockifier());
+            expr.visit(queryBlockifier);
         } catch (Exception e) {
             throw new AssertionError("Unable to perform blockification for the expression " + expr);
         }
+        return queryBlockifier.currentBlock;
     }
 
+    // BGPBlock+LeftJoin, Union, Intersection, Difference,
+    //
     class QueryBlockifier extends AbstractQueryModelVisitor<Exception> {
 
         private TupleExpr currentRoot;
@@ -240,4 +247,5 @@ public class SimpleQueryPlanner implements QueryPlanner {
 
     }
 
+    //class QueryBlockCompiler
 }

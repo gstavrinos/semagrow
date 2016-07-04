@@ -5,7 +5,8 @@ import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.algebra.UnaryTupleOperator;
 
 /**
- * Created by angel on 9/30/14.
+ *
+ * @author acharal
  */
 public class Plan extends UnaryTupleOperator {
 
