@@ -9,7 +9,8 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
- * Created by angel on 30/6/2016.
+ *
+ * @author acharal
  */
 public class PlanCollectionImpl extends ArrayList<Plan> implements PlanCollection {
 

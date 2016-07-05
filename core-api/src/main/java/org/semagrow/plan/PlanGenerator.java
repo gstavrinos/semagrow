@@ -4,8 +4,6 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.Dataset;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
 
-import java.util.Collection;
-
 /**
  * The interface that describes the possible methods to construct
  * plans out of expressions and combine plans to more complex ones.
@@ -39,6 +37,6 @@ public interface PlanGenerator {
      * @return a collection of plans that contain the given plans altered in such a way to satisfy
      * the desired properties.
      */
-    PlanCollection finalizePlans(PlanCollection plans, PlanProperties desiredProperties);
+    PlanCollection finalizePlans(PlanCollection plans, PlanPropertySet desiredProperties);
 
 }

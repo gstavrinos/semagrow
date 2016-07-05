@@ -10,7 +10,7 @@ import org.semagrow.selector.Site;
  *
  * @author acharal
  */
-public class SimplePlanProperties implements PlanProperties {
+public class SimplePlanPropertySet implements PlanPropertySet {
 
     private Cost nodeCost;
 
@@ -41,16 +41,16 @@ public class SimplePlanProperties implements PlanProperties {
 
     public void setOrdering(Ordering ordering) { this.ordering = ordering; }
 
-    public static SimplePlanProperties defaultProperties() {
-        SimplePlanProperties p = new SimplePlanProperties();
+    public static SimplePlanPropertySet defaultProperties() {
+        SimplePlanPropertySet p = new SimplePlanPropertySet();
         p.setOrdering(Ordering.NOORDERING);
         p.setSite(LocalSite.getInstance());
         p.setCost(new Cost(0));
         return p;
     }
 
-    public PlanProperties clone() {
-        SimplePlanProperties p = new SimplePlanProperties();
+    public PlanPropertySet clone() {
+        SimplePlanPropertySet p = new SimplePlanPropertySet();
         p.nodeCost = this.nodeCost;
         p.ordering = this.ordering;
         p.site = this.site;
@@ -58,7 +58,7 @@ public class SimplePlanProperties implements PlanProperties {
     }
 
     @Override
-    public boolean isComparable(PlanProperties properties) {
+    public boolean isComparable(PlanPropertySet properties) {
         return (properties.getSite().equals(this.getSite()));
     }
 }

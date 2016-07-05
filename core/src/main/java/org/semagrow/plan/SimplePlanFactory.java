@@ -26,13 +26,13 @@ public class SimplePlanFactory implements PlanFactory {
 
 
     public Plan create(TupleExpr expr) {
-        return create(expr, SimplePlanProperties.defaultProperties());
+        return create(expr, SimplePlanPropertySet.defaultProperties());
     }
 
 
-    public Plan create(TupleExpr expr, PlanProperties initialProps)
+    public Plan create(TupleExpr expr, PlanPropertySet initialProps)
     {
-        PlanProperties props = PlanPropertiesUpdater.process(expr, initialProps);
+        PlanPropertySet props = PlanPropertiesUpdater.process(expr, initialProps);
 
         Site s = props.getSite();
 

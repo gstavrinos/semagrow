@@ -1,7 +1,9 @@
 package org.semagrow.plan;
 
 /**
- * Created by angel on 30/6/2016.
+ * Visitor of a {@link QueryBlock} tree
+ * @author acharal
+ * @since 2.0
  */
 public interface QueryBlockVisitor<X extends Exception> {
 

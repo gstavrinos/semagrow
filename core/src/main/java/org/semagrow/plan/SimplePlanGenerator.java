@@ -2,20 +2,15 @@ package org.semagrow.plan;
 
 import org.semagrow.local.LocalSite;
 import org.semagrow.plan.operators.SourceQuery;
-import org.semagrow.estimator.CardinalityEstimatorResolver;
-import org.semagrow.plan.util.BindingSetAssignmentCollector;
 import org.semagrow.plan.util.FilterCollector;
-import org.semagrow.estimator.CostEstimatorResolver;
 
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.Dataset;
 import org.eclipse.rdf4j.query.algebra.*;
-import org.eclipse.rdf4j.query.algebra.helpers.StatementPatternCollector;
 import org.eclipse.rdf4j.query.algebra.helpers.VarNameCollector;
 import org.semagrow.selector.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 /**
@@ -117,7 +112,7 @@ public class SimplePlanGenerator implements PlanGenerator, PlanGenerationContext
 
 
     @Override
-    public PlanCollection finalizePlans(PlanCollection plans, PlanProperties properties)
+    public PlanCollection finalizePlans(PlanCollection plans, PlanPropertySet properties)
     {
         return plans.stream()
                 .map(p -> enforce(p, LocalSite.getInstance()))
@@ -216,7 +211,7 @@ public class SimplePlanGenerator implements PlanGenerator, PlanGenerationContext
     {
         Site site = metadata.getSites().iterator().next();
 
-        PlanProperties prop = SimplePlanProperties.defaultProperties();
+        PlanPropertySet prop = SimplePlanPropertySet.defaultProperties();
         prop.setSite(site);
 
         return planFactory.create(innerExpr, prop);

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by angel on 10/2/14.
+ * @author acharal
  */
 public class Ordering {
 
@@ -55,7 +55,6 @@ public class Ordering {
         return true;
     }
 
-
     public Ordering filter(Set<String> fields) {
         List<OrderElem> oo = new LinkedList<OrderElem>();
         for (OrderElem el : this.orderElements) {
@@ -68,7 +67,6 @@ public class Ordering {
         }
         return new Ordering(oo);
     }
-
 
     public String toString() {
         if (orderElements.isEmpty())

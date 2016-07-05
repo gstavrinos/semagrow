@@ -10,19 +10,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A PlanVisitor that traverses the execution plan tree and updates
+ * A {@link PlanVisitor} that traverses the execution plan tree and updates
  * the properties derived by the operator specifications
  * @author acharal
  */
-public class PlanPropertiesUpdater extends PlanVisitorBase<RuntimeException> {
+public class PlanPropertiesUpdater extends AbstractPlanVisitor<RuntimeException> {
 
-    private PlanProperties properties = SimplePlanProperties.defaultProperties();
+    private PlanPropertySet properties = SimplePlanPropertySet.defaultProperties();
 
-    static public PlanProperties process(TupleExpr expr) {
-        return process(expr, SimplePlanProperties.defaultProperties());
+    static public PlanPropertySet process(TupleExpr expr) {
+        return process(expr, SimplePlanPropertySet.defaultProperties());
     }
 
-    static public PlanProperties process(TupleExpr expr, PlanProperties initialProperties) {
+    static public PlanPropertySet process(TupleExpr expr, PlanPropertySet initialProperties) {
 
         PlanPropertiesUpdater updater  = new PlanPropertiesUpdater();
         updater.properties = initialProperties;
@@ -78,14 +78,14 @@ public class PlanPropertiesUpdater extends PlanVisitorBase<RuntimeException> {
     @Override
     public void meet(BindJoin join) throws RuntimeException  {
         join.getLeftArg().visit(this);
-        PlanProperties leftProperties = this.properties;
+        PlanPropertySet leftProperties = this.properties;
     }
 
     @Override
     public void meet(HashJoin join) throws RuntimeException  {
 
         join.getLeftArg().visit(this);
-        PlanProperties leftProperties = this.properties;
+        PlanPropertySet leftProperties = this.properties;
 
         join.getRightArg().visit(this);
 

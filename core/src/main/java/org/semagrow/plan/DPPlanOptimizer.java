@@ -21,7 +21,7 @@ public class DPPlanOptimizer
 
     private PlanGenerator planGenerator;
 
-    private PlanProperties properties = SimplePlanProperties.defaultProperties();
+    private PlanPropertySet properties = SimplePlanPropertySet.defaultProperties();
 
     public DPPlanOptimizer(PlanGenerator planGenerator)
     {
