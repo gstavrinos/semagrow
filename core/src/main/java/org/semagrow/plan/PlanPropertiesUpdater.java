@@ -35,11 +35,11 @@ public class PlanPropertiesUpdater extends AbstractPlanVisitor<RuntimeException>
             return initialProperties;
     }
 
-    @Override
+
     public void meet(Order order) throws RuntimeException  {
-        Ordering o = new Ordering(order.getElements());
-        order.getArg().visit(this);
-        properties.setOrdering(o);
+        //Ordering o = new Ordering(order.getElements());
+        //order.getArg().visit(this);
+        //properties.setOrdering(o);
     }
 
     @Override
@@ -59,15 +59,15 @@ public class PlanPropertiesUpdater extends AbstractPlanVisitor<RuntimeException>
         projection.getArg().visit(this);
 
         //compute ordering
-        Ordering o = this.properties.getOrdering();
+        //Ordering o = this.properties.getOrdering();
         Set<String> sourceNames = new HashSet<String>();
 
         for (ProjectionElem elem: projection.getProjectionElemList().getElements()) {
             sourceNames.add(elem.getSourceName());
         }
 
-        Ordering o2 = o.filter(sourceNames);
-        this.properties.setOrdering(o2);
+        //Ordering o2 = o.filter(sourceNames);
+        //this.properties.setOrdering(o2);
     }
 
     @Override

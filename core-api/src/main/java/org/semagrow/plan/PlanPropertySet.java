@@ -31,11 +31,11 @@ public interface PlanPropertySet {
 
     /**
      * Returns the ordering of the result set that will be yielded
-     * when the plan will be evaluated.
+     * w  hen the plan will be evaluated.
      */
-    Ordering getOrdering();
+    StructureProperties getStructureProperties();
 
-    void setOrdering(Ordering ordering);
+    void setStructureProperties(StructureProperties ordering);
 
     /**
      * Checks if this property set is comparable with another property set.

@@ -13,6 +13,8 @@ import java.util.Set;
  */
 public class QueryBlock implements TupleExpr {
 
+    private InterestingProperties intProps;
+
     private TupleExpr e;
 
     public QueryBlock(TupleExpr e) { this.e = e; }

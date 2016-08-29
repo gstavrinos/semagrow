@@ -56,7 +56,7 @@ public class SimpleQueryPlanner implements QueryPlanner {
     }
 
     protected QueryBlock blockify(QueryRoot expr, Dataset dataset, BindingSet bindings) {
-        QueryBlockifier queryBlockifier = new QueryBlockifier();
+        QueryBlockCreator queryBlockifier = new QueryBlockCreator();
         try {
             expr.visit(queryBlockifier);
         } catch (Exception e) {
@@ -67,7 +67,7 @@ public class SimpleQueryPlanner implements QueryPlanner {
 
     // BGPBlock+LeftJoin, Union, Intersection, Difference,
     //
-    class QueryBlockifier extends AbstractQueryModelVisitor<Exception> {
+    class QueryBlockCreator extends AbstractQueryModelVisitor<Exception> {
 
         private TupleExpr currentRoot;
         private QueryBlock currentBlock;
@@ -150,10 +150,6 @@ public class SimpleQueryPlanner implements QueryPlanner {
             currentRoot = oldRoot;
         }
 
-        @Override
-        public void meet(Order o) {
-
-        }
 
         @Override
         public void meet(Union u) throws Exception {
@@ -213,39 +209,4 @@ public class SimpleQueryPlanner implements QueryPlanner {
 
     }
 
-    class InterestingPropertiesVisitor extends AbstractQueryModelVisitor<Exception> {
-
-        @Override
-        public void meet(Order o) {
-
-        }
-
-        @Override
-        public void meet(Group o) {
-
-        }
-
-        @Override
-        public void meet(Distinct o) {
-
-        }
-
-        @Override
-        public void meet(Join o) {
-
-        }
-
-        @Override
-        public void meet(LeftJoin o) {
-
-        }
-
-        @Override
-        public void meet(Union o) {
-
-        }
-
-    }
-
-    //class QueryBlockCompiler
 }
