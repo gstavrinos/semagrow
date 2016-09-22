@@ -146,11 +146,14 @@ public class SimplePlanGenerator implements PlanGenerator, PlanGenerationContext
 
     @Override
     public Plan enforce(Plan p, Ordering ordering) {
+        /*
         if (p.getProperties().getOrdering().isCoverOf(ordering)) {
             return p;
         } else {
             return create(new Order(p, ordering.getOrderElements()));
         }
+        */
+        return p;
     }
 
     public TupleExpr applyRemainingFilters(Plan e, Collection<ValueExpr> conditions) {

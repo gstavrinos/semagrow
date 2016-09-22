@@ -16,11 +16,11 @@ public class SimplePlanPropertySet implements PlanPropertySet {
 
     private Cost cumulativeCost;
 
-    private Ordering ordering;
-
     private long cardinality;
 
     private Site site;
+
+    private StructureProperties structProps;
 
     @Override
     public long getCardinality() { return cardinality; }
@@ -37,13 +37,18 @@ public class SimplePlanPropertySet implements PlanPropertySet {
 
     public void setSite(Site site) { this.site = site; }
 
-    public Ordering getOrdering() { return ordering; }
+    @Override
+    public StructureProperties getStructureProperties() {
+        return structProps;
+    }
 
-    public void setOrdering(Ordering ordering) { this.ordering = ordering; }
+    @Override
+    public void setStructureProperties(StructureProperties ordering) {
+        structProps = ordering;
+    }
 
     public static SimplePlanPropertySet defaultProperties() {
         SimplePlanPropertySet p = new SimplePlanPropertySet();
-        p.setOrdering(Ordering.NOORDERING);
         p.setSite(LocalSite.getInstance());
         p.setCost(new Cost(0));
         return p;
@@ -52,7 +57,7 @@ public class SimplePlanPropertySet implements PlanPropertySet {
     public PlanPropertySet clone() {
         SimplePlanPropertySet p = new SimplePlanPropertySet();
         p.nodeCost = this.nodeCost;
-        p.ordering = this.ordering;
+        p.structProps = this.structProps;
         p.site = this.site;
         return p;
     }

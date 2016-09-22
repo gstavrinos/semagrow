@@ -13,7 +13,7 @@
 
     <properties>   
         <build.properties>src/properties/build.properties</build.properties>
-        <tomcat.version>7.0.70</tomcat.version>
+        <tomcat.version>8.5.3</tomcat.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -337,6 +337,83 @@
                               </configuration>
                           </execution>
                       </executions>
+                  </plugin>
+              </plugins>
+          </build>
+	    </profile>
+	       <profile>
+          <id>docker</id>
+           <dependencies>
+               <dependency>
+                   <groupId>${project.groupId}</groupId>
+                   <artifactId>semagrow-webgui</artifactId>
+                   <version>${project.version}</version>
+                   <type>war</type>
+               </dependency>
+               <dependency>
+                   <groupId>${project.groupId}</groupId>
+                   <artifactId>semagrow-connector-sparql</artifactId>
+                   <version>${project.version}</version>
+               </dependency>
+           </dependencies>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-shade-plugin</artifactId>
+                      <version>2.1</version>
+                      <executions>
+                          <execution>
+                              <phase>prepare-package</phase>
+                              <goals>
+                                  <goal>shade</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-war-plugin</artifactId>
+                      <version>2.6</version>
+                      <executions>
+                          <execution>
+                              <phase>prepare-package</phase>
+                              <goals>
+                                  <goal>war</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+
+                  <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.4.13</version>
+                        <executions>
+                                      <execution>
+                                          <phase>package</phase>
+                                          <goals>
+                                              <goal>build</goal>
+                                          </goals>
+                                      </execution>
+                                  </executions>
+                        <configuration>
+                          <imageName>semagrow</imageName>
+                          <dockerDirectory>${project.basedir}/src/docker</dockerDirectory>
+                          <resources>
+                            <resource>
+                              <targetPath>/</targetPath>
+                              <directory>${project.build.directory}</directory>
+                              <include>${project.artifactId}-${project.version}.war</include>
+                            </resource>
+                            <resource>
+                              <targetPath>/</targetPath>
+                              <directory>${project.basedir}/src/main/resources</directory>
+                              <include>metadata.ttl</include>
+                              <include>repository.ttl</include>
+                            </resource>
+                          </resources>
+                        </configuration>
                   </plugin>
               </plugins>
           </build>
