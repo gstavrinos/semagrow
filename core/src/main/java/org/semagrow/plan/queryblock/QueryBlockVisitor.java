@@ -1,4 +1,4 @@
-package org.semagrow.plan;
+package org.semagrow.plan.queryblock;
 
 /**
  * Visitor of a {@link QueryBlock} tree

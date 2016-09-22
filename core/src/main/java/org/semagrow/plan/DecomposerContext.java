@@ -20,7 +20,8 @@ import java.util.Collection;
 public class DecomposerContext
 {
 	public static final long LIMIT_NONE = -2;
-	public static final long LIMIT_OVERFLOW = -1;
+
+    public static final long LIMIT_OVERFLOW = -1;
 
 	private Ordering ordering;
 
