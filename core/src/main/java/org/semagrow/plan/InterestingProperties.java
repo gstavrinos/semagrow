@@ -9,7 +9,7 @@ import java.util.Collection;
  */
 public class InterestingProperties implements Cloneable {
 
-    private Collection<StructureProperties> dataProps = new ArrayList<>();
+    private Collection<RequestedStructureProperties> dataProps = new ArrayList<>();
 
     @Override
     public Object clone() {
