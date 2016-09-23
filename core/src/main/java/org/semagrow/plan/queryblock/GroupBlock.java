@@ -5,6 +5,7 @@ import org.eclipse.rdf4j.query.algebra.AggregateOperator;
 import org.eclipse.rdf4j.query.algebra.ValueExpr;
 import org.semagrow.plan.Plan;
 import org.semagrow.plan.PlanCollection;
+import org.semagrow.plan.StructureProperties;
 
 import java.util.*;
 
@@ -38,6 +39,8 @@ public class GroupBlock extends AbstractQueryBlock {
         return Sets.union(groupByVariables, aggregations.keySet());
     }
 
+    public Set<String> getGroupedVariables() { return groupByVariables; }
+
     @Override
     public <X extends Exception> void visitChildren(QueryBlockVisitor<X> visitor) throws X {
         sourceBlock.visit(visitor);
@@ -45,4 +48,7 @@ public class GroupBlock extends AbstractQueryBlock {
 
     public boolean hasDuplicates() { return false; }
 
+    public PlanCollection getPlans() { return null; }
+
+    public Plan getBestPlan() { return null; }
 }

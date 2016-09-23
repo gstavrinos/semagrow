@@ -1,5 +1,6 @@
 package org.semagrow.plan;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,6 +20,10 @@ public class RequestedStructureProperties {
      */
     Optional<Set<String>> groupedFields;
 
+    public RequestedStructureProperties(){
+        ordering = Optional.empty();
+        groupedFields = Optional.empty();
+    }
 
     public boolean isCoveredBy(StructureProperties other) {
 
@@ -37,4 +42,22 @@ public class RequestedStructureProperties {
 
         return true;
     }
+
+    public boolean isTrivial() {
+        return !ordering.isPresent() && !groupedFields.isPresent();
+    }
+
+    public static RequestedStructureProperties forOrdering(Ordering o) {
+        RequestedStructureProperties props = new RequestedStructureProperties();
+        props.ordering = Optional.of(o.clone());
+        return props;
+    }
+
+    public static RequestedStructureProperties forGrouping(Set<String> groupedFields) {
+        RequestedStructureProperties props = new RequestedStructureProperties();
+        props.groupedFields = Optional.of(new HashSet<>(groupedFields));
+        return props;
+    }
+
+
 }

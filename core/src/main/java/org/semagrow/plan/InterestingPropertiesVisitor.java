@@ -2,6 +2,7 @@ package org.semagrow.plan;
 
 import org.semagrow.plan.queryblock.*;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -12,40 +13,80 @@ import java.util.Optional;
  */
 public class InterestingPropertiesVisitor extends AbstractQueryBlockVisitor<RuntimeException> {
 
+    private InterestingProperties intProps = new InterestingProperties();
+
     @Override
     public void meet(SelectBlock b) {
 
-        InterestingProperties intProps;
+        InterestingProperties props = coverWithOutput(b, intProps);
 
-        Optional<Ordering> maybeOrdering = b.getOrdering();
+        b.setIntProps(props);
 
-        if (maybeOrdering.isPresent()) {
-            // we must satisfy an ordering requirement
-        }
+        InterestingProperties inputProps = props.clone();
 
         if (b.getDuplicateStrategy() == OutputStrategy.ENFORCE) {
-            // we might be interested in grouping
+            inputProps.addStructureProperties(RequestedStructureProperties.forGrouping(b.getOutputVariables()));
         }
-
-        // associate interesting properties.
-        //block.setIntProps(intProps);
 
         for (Quantifier q : b.getQuantifiers()) {
-            // push input requirements to children QueryBlocks
+            intProps = homogenize(inputProps, q.getBlock().getOutputVariables());
+
+            // determine interesting orderings arising from merge-joins
+
             q.getBlock().visit(this);
         }
-
-        super.meet(b);
     }
 
     @Override
     public void meet(GroupBlock b) {
 
+        InterestingProperties props = coverWithOutput(b, intProps);
+
+        b.setIntProps(props);
+
+        InterestingProperties inputProps = props.clone();
+        inputProps.addStructureProperties(RequestedStructureProperties.forGrouping(b.getGroupedVariables()));
+
+        intProps = homogenize(inputProps, b.getOutputVariables());
+
+        super.meet(b);
     }
 
     @Override
     public void meet(UnionBlock b) {
-
+        b.setIntProps(intProps);
+        super.meet(b);
     }
 
+    @Override
+    public void meet(IntersectionBlock b) {
+        b.setIntProps(intProps);
+        super.meet(b);
+    }
+
+    @Override
+    public void meet(MinusBlock b) {
+        b.setIntProps(intProps);
+        super.meet(b);
+    }
+
+    protected InterestingProperties coverWithOutput(QueryBlock b, InterestingProperties intProps) {
+
+        InterestingProperties props = new InterestingProperties();
+        StructureProperties outputReqs = b.getOutputProperties();
+        props.addStructureProperties(outputReqs.asRequestedProperties());
+
+        for (RequestedStructureProperties reqProps : intProps.getStructureProperties()) {
+            if (!reqProps.isCoveredBy(outputReqs)) {
+                props.addStructureProperties(reqProps);
+            }
+        }
+        props.dropTrivials();
+
+        return props;
+    }
+
+    protected InterestingProperties homogenize(InterestingProperties props, Collection<String> variables) {
+        return props;
+    }
 }

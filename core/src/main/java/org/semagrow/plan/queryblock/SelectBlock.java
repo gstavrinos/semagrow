@@ -2,6 +2,9 @@ package org.semagrow.plan.queryblock;
 
 import org.eclipse.rdf4j.query.algebra.ValueExpr;
 import org.semagrow.plan.Ordering;
+import org.semagrow.plan.Plan;
+import org.semagrow.plan.PlanCollection;
+import org.semagrow.plan.StructureProperties;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -65,11 +68,12 @@ public class SelectBlock extends AbstractQueryBlock {
         return true;
     }
 
-    public Optional<Ordering> getOrdering() { return this.ordering; }
 
-    public void setOrdering(Ordering o) { this.ordering = Optional.of(o); }
-
-    public boolean hasOrdering() { return ordering.isPresent(); }
+    public void setOrdering(Ordering o) {
+        StructureProperties props = getOutputProperties();
+        props.setOrdering(o);
+        setOutputProperties(props);
+    }
 
     public void setLimit(Long l) { limit = Optional.of(l); }
 
@@ -145,5 +149,9 @@ public class SelectBlock extends AbstractQueryBlock {
 
         outputVars.put(var, expr);
     }
+
+    public PlanCollection getPlans() { return null; }
+
+    public Plan getBestPlan() { return null; }
 
 }

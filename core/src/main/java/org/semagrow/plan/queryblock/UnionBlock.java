@@ -1,6 +1,9 @@
 package org.semagrow.plan.queryblock;
 
 
+import org.semagrow.plan.Plan;
+import org.semagrow.plan.PlanCollection;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,5 +48,9 @@ public class UnionBlock extends AbstractQueryBlock {
     public void addAll(Collection<QueryBlock> bs) { blocks.addAll(bs); }
 
     public boolean hasDuplicates() { return true; }
+
+    public PlanCollection getPlans() { return null; }
+
+    public Plan getBestPlan() { return null; }
 
 }

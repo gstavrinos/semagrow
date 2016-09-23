@@ -1,5 +1,6 @@
 package org.semagrow.plan;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,7 +24,24 @@ public class StructureProperties {
     /**
      * The set of fields that combined identify uniquely the row.
      */
-    Set<Set<String>> uniqueFields;
+    Set<Set<String>> uniqueFields = new HashSet<>();
+
+    public void setGrouping(Set<String> groupedFields) {
+        this.groupedFields = Optional.of(new HashSet<>(groupedFields));
+    }
+
+    public void setOrdering(Ordering o) {
+        this.ordering = Optional.of(o);
+    }
+
+    public void addUnique(Set<String> unique) {
+        // FIXME: Check if there is already a superset of unique
+        uniqueFields.add(unique);
+    }
+
+    public void removeUnique(Set<String> unique) {
+        uniqueFields.remove(unique);
+    }
 
     public boolean isCoveredBy(StructureProperties other) {
 
@@ -45,6 +63,16 @@ public class StructureProperties {
 
     public boolean isTrivial() {
         return !ordering.isPresent() && !groupedFields.isPresent();
+    }
+
+    public RequestedStructureProperties asRequestedProperties() {
+
+        if (ordering.isPresent())
+            return RequestedStructureProperties.forOrdering(ordering.get());
+        else if (groupedFields.isPresent())
+            return RequestedStructureProperties.forGrouping(groupedFields.get());
+        else
+            return new RequestedStructureProperties();
     }
 
 }

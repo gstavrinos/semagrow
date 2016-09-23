@@ -1,5 +1,8 @@
 package org.semagrow.plan.queryblock;
 
+import org.semagrow.plan.Plan;
+import org.semagrow.plan.PlanCollection;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,5 +49,9 @@ public class IntersectionBlock extends AbstractQueryBlock {
             return true;
         }
     }
+
+    public PlanCollection getPlans() { return null; }
+
+    public Plan getBestPlan() { return null; }
 
 }
