@@ -46,7 +46,8 @@ public class InterestingPropertiesVisitor extends AbstractQueryBlockVisitor<Runt
         InterestingProperties inputProps = props.clone();
         inputProps.addStructureProperties(RequestedDataProperties.forGrouping(b.getGroupedVariables()));
 
-        intProps = homogenize(inputProps, b.getOutputVariables());
+        // no homogenization since groupblock does not change the name of the variables
+        //intProps = homogenize(inputProps, b.getOutputVariables());
 
         super.meet(b);
     }
@@ -105,6 +106,7 @@ public class InterestingPropertiesVisitor extends AbstractQueryBlockVisitor<Runt
     }
 
     protected InterestingProperties homogenize(InterestingProperties props, Collection<String> variables) {
+        // try to substitute each column in props with a column in variables (based on the equivalent classes)
         return props;
     }
 
