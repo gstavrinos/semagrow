@@ -13,26 +13,65 @@ import java.util.Set;
  */
 public interface QueryBlock {
 
+    /**
+     * Get the name of the variables that will occur
+     * in the output of the block
+     * @return the set of the output variables
+     */
     Set<String> getOutputVariables();
 
+    /**
+     * Get the structure properties that are enforced by this query block on its output
+     * @return the structure properties of the output (if any). If the block does not
+     *         impose any properties on its output then the returned properties are trivial.
+     * @see StructureProperties::isTrivial
+     */
+    StructureProperties getOutputProperties();
+
+    /**
+     * Infer the fact that the output may contain duplicates.
+     * This depends on the {@link OutputStrategy} associated with this block
+     * and from its children.
+     * @return false if it is guaranteed that the output will not contain duplicates; false otherwise.
+     * @see OutputStrategy
+     * @see this::setDuplicateStrategy
+     */
+    boolean hasDuplicates();
+
+    /**
+     * Get the {@link OutputStrategy} that is set for this block.
+     * <p>
+     * If not set, the default is {@link OutputStrategy::PRESERVE}
+     *
+     * @return the current output strategy
+     */
+    OutputStrategy getDuplicateStrategy();
+
+    /**
+     * Set the {@link OutputStrategy} for this block
+     * @param duplicateStrategy the desired output strategy.
+     */
+    void setDuplicateStrategy(OutputStrategy duplicateStrategy);
+
+
+    /**
+     * Get the interesting properties that are associated
+     * with this query block
+     * @return the associated interesting properties
+     */
     InterestingProperties getIntProps();
 
+    /**
+     * Associates a set of interesting properties with this block
+     * @param intProps the interesting properties to associate with
+     */
     void setIntProps(InterestingProperties intProps);
-
-    PlanCollection getPlans();
-
-    Plan getBestPlan();
 
     <X extends Exception> void visit(QueryBlockVisitor<X> visitor) throws X;
 
     <X extends Exception> void visitChildren(QueryBlockVisitor<X> visitor) throws X;
 
-    boolean hasDuplicates();
+    PlanCollection getPlans();
 
-    OutputStrategy getDuplicateStrategy();
-
-    void setDuplicateStrategy(OutputStrategy duplicateStrategy);
-
-    StructureProperties getOutputProperties();
-
+    Plan getBestPlan();
 }
