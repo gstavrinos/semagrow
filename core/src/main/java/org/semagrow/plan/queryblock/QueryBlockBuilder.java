@@ -382,11 +382,21 @@ public class QueryBlockBuilder extends AbstractQueryModelVisitor<RuntimeExceptio
                 selectBlock.addProjection(v.getName(), v);
         }
 
+        Optional<ValueExpr> cond = Optional.empty();
+
+        if (e.hasCondition()) {
+           ValueExpr c = e.getCondition().clone();
+           c.visit(new VarReplacer(f));
+           c.visit(new VarReplacer(t));
+           cond = Optional.of(c);
+        }
+
         for (String v : vars) {
             Optional<Quantifier.Var> from = f.getVariable(v);
             Optional<Quantifier.Var> to   = t.getVariable(v);
+
             if (from.isPresent() && to.isPresent())
-                selectBlock.addPredicate(new LeftJoinPredicate(from.get(), to.get()));
+                selectBlock.addPredicate(new LeftJoinPredicate(from.get(), to.get(), cond));
         }
 
         block = selectBlock;

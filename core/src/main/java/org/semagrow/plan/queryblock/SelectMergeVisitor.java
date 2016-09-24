@@ -180,7 +180,35 @@ public class SelectMergeVisitor extends AbstractQueryBlockVisitor<RuntimeExcepti
                 }
 
             } else if (p instanceof LeftJoinPredicate) {
+                LeftJoinPredicate jp = (LeftJoinPredicate) p;
 
+                for (Map.Entry<Quantifier.Var, ValueExpr> entry : replacements.entrySet()) {
+
+                    if (entry.getValue() instanceof Quantifier.Var) {
+                        boolean inNullProducingSide = jp.getTo().getQuantifier().equals(entry.getKey().getQuantifier());
+
+                        jp.replaceVarWith(entry.getKey(), (Quantifier.Var) entry.getValue());
+
+                        if (inNullProducingSide) {
+                            Quantifier q = jp.getTo().getQuantifier();
+                            SelectBlock qb = (SelectBlock) q.getBlock();
+                            Collection<Quantifier> qs = qb.getQuantifiers();
+                            jp.getEEL().addAll(qs);
+                        }
+
+                    } else {
+                        //FIXME: The case where a predicate references a complex select query
+                        // and the join variable is derived. e.g.
+                        // SELECT ?x ?c { { SELECT (?y * 2 AS ?c) { ?x test:num ?y } } OPTIONAL { ?x test:count ?c . }
+                        /*
+                        ValueExpr e = jp.asExpr();
+                        ThetaJoinPredicate tp = new ThetaJoinPredicate(e);
+                        tp.replaceWith(entry.getKey(), entry.getValue());
+                        bb.removePredicate(jp);
+                        bb.addPredicate(tp);
+                        */
+                    }
+                }
             } else if (p instanceof ThetaJoinPredicate) {
 
                 ThetaJoinPredicate tp = (ThetaJoinPredicate)p;

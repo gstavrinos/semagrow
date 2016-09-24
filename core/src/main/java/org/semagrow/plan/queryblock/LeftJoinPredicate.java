@@ -4,6 +4,9 @@ import org.eclipse.rdf4j.query.algebra.Compare;
 import org.eclipse.rdf4j.query.algebra.ValueExpr;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author acharal
@@ -11,11 +14,34 @@ import java.util.Collection;
 public class LeftJoinPredicate extends BinaryPredicate {
 
     private Collection<Quantifier> eel;
+    private Optional<ValueExpr> cond;
 
-    public LeftJoinPredicate(Quantifier.Var from, Quantifier.Var to)
+    public LeftJoinPredicate(Quantifier.Var from, Quantifier.Var to, ValueExpr cond)
     {
-        super(from, to);
+        this(from, to, Optional.of(cond));
+    }
+
+    public LeftJoinPredicate(Quantifier.Var from, Quantifier.Var to) {
+        this(from, to, Optional.empty());
+    }
+
+    public LeftJoinPredicate(Quantifier.Var from, Quantifier.Var to, Optional<ValueExpr> cond) {
+        super(from,to);
+        this.cond = cond;
         setEEL(getEL());
+    }
+
+    public Collection<Quantifier> getEL() {
+        Set<Quantifier> coll = new HashSet<>(super.getEL());
+
+        if (cond.isPresent()) {
+            QuantifierCollector.process(cond.get()).stream()
+                    .map(q -> q.getQuantifier())
+                    .forEach( q -> {
+                        coll.add(q);
+                    });
+        }
+        return coll;
     }
 
     public void setEEL(Collection<Quantifier> eel) { this.eel = eel; }
