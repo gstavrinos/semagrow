@@ -3,7 +3,7 @@ package org.semagrow.plan.queryblock;
 import org.semagrow.plan.InterestingProperties;
 import org.semagrow.plan.Plan;
 import org.semagrow.plan.PlanCollection;
-import org.semagrow.plan.StructureProperties;
+import org.semagrow.plan.DataProperties;
 
 import java.util.Set;
 
@@ -16,7 +16,7 @@ public abstract class AbstractQueryBlock implements QueryBlock {
 
     private OutputStrategy duplicateStrategy = OutputStrategy.PRESERVE;
 
-    private StructureProperties structureProps = new StructureProperties();
+    private DataProperties structureProps = new DataProperties();
 
     public OutputStrategy getDuplicateStrategy() { return duplicateStrategy; }
 
@@ -38,10 +38,10 @@ public abstract class AbstractQueryBlock implements QueryBlock {
     }
 
     @Override
-    public InterestingProperties getIntProps() { return intProps; }
+    public InterestingProperties getInterestingProperties() { return intProps; }
 
     @Override
-    public void setIntProps(InterestingProperties intProps) { this.intProps = intProps; }
+    public void setInterestingProperties(InterestingProperties intProps) { this.intProps = intProps; }
 
     @Override
     public abstract Set<String> getOutputVariables();
@@ -61,11 +61,11 @@ public abstract class AbstractQueryBlock implements QueryBlock {
     public <X extends Exception> void visitChildren(QueryBlockVisitor<X> visitor) throws X { }
 
 
-    public StructureProperties getOutputProperties() {
+    public DataProperties getOutputDataProperties() {
         return structureProps;
     }
 
-    protected void setOutputProperties(StructureProperties props) {
+    protected void setOutputProperties(DataProperties props) {
         this.structureProps = props;
     }
 

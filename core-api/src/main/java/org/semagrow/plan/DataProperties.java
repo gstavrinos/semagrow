@@ -8,7 +8,7 @@ import java.util.Set;
  * This class is used to describe properties regarding the structure of the data
  * such as ordering and grouping.
  */
-public class StructureProperties {
+public class DataProperties {
 
     /**
      * The optional ordering of the data.
@@ -43,7 +43,7 @@ public class StructureProperties {
         uniqueFields.remove(unique);
     }
 
-    public boolean isCoveredBy(StructureProperties other) {
+    public boolean isCoveredBy(DataProperties other) {
 
         if (ordering.isPresent()) {
             // check whether the ordering is covered by the other ordering
@@ -65,14 +65,14 @@ public class StructureProperties {
         return !ordering.isPresent() && !groupedFields.isPresent();
     }
 
-    public RequestedStructureProperties asRequestedProperties() {
+    public RequestedDataProperties asRequestedProperties() {
 
         if (ordering.isPresent())
-            return RequestedStructureProperties.forOrdering(ordering.get());
+            return RequestedDataProperties.forOrdering(ordering.get());
         else if (groupedFields.isPresent())
-            return RequestedStructureProperties.forGrouping(groupedFields.get());
+            return RequestedDataProperties.forGrouping(groupedFields.get());
         else
-            return new RequestedStructureProperties();
+            return new RequestedDataProperties();
     }
 
 }

@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class InterestingProperties implements Cloneable {
 
-    private Set<RequestedStructureProperties> dataProps = new HashSet<>();
+    private Set<RequestedDataProperties> dataProps = new HashSet<>();
 
     @Override
     public InterestingProperties clone() {
@@ -19,7 +19,7 @@ public class InterestingProperties implements Cloneable {
         return newIntProps;
     }
 
-    public void addStructureProperties(RequestedStructureProperties props) {
+    public void addStructureProperties(RequestedDataProperties props) {
         dataProps.add(props);
     }
 
@@ -28,14 +28,14 @@ public class InterestingProperties implements Cloneable {
     }
 
 
-    public Set<RequestedStructureProperties> getStructureProperties() {
+    public Set<RequestedDataProperties> getStructureProperties() {
         return dataProps;
     }
 
     public void dropTrivials() {
-        Iterator<RequestedStructureProperties> it = dataProps.iterator();
+        Iterator<RequestedDataProperties> it = dataProps.iterator();
         while (it.hasNext()) {
-            RequestedStructureProperties props = it.next();
+            RequestedDataProperties props = it.next();
             if (props.isTrivial())
                 it.remove();
         }

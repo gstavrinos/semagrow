@@ -8,7 +8,7 @@ import org.eclipse.rdf4j.query.algebra.evaluation.QueryOptimizer;
 import org.eclipse.rdf4j.query.algebra.evaluation.impl.*;
 import org.eclipse.rdf4j.query.algebra.evaluation.util.QueryOptimizerList;
 import org.eclipse.rdf4j.query.algebra.helpers.AbstractQueryModelVisitor;
-import org.semagrow.plan.queryblock.AbstractQueryBlock;
+import org.semagrow.plan.queryblock.*;
 
 /**
  * The default implementation of a {@link QueryPlanner}
@@ -24,13 +24,23 @@ public class SimpleQueryPlanner implements QueryPlanner {
         rewrite(query.getArg(), dataset, bindings);
 
         // split query to queryblocks.
-        //AbstractQueryBlock blockRoot = blockify(query, dataset, bindings);
+        QueryBlock blockRoot = blockify(query, dataset, bindings);
 
         // infer interesting properties for each query block.
 
         // traverse Blocks and compile them bottom-up.
 
         return null;
+    }
+
+    private QueryBlock blockify(QueryRoot query, Dataset dataset, BindingSet bindings) {
+        QueryBlock block = QueryBlockBuilder.build(query);   // translate TupleExpr to simple QueryBlocks
+        block.visit(new DistinctStrategyVisitor());          // relax duplicate restriction if possible to facilitate merging
+        block.visit(new ExistToEachQuantificationVisitor()); // try unnest existential queries if possible
+        block.visit(new UnionMergeVisitor());                // try merge union blocks if possible
+        block.visit(new SelectMergeVisitor());               // try merge select blocks if possible
+        block.visit(new InterestingPropertiesVisitor());     // infer interesting properties for each block
+        return block;
     }
 
     /**

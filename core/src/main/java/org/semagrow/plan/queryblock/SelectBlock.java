@@ -4,11 +4,10 @@ import org.eclipse.rdf4j.query.algebra.ValueExpr;
 import org.semagrow.plan.Ordering;
 import org.semagrow.plan.Plan;
 import org.semagrow.plan.PlanCollection;
-import org.semagrow.plan.StructureProperties;
+import org.semagrow.plan.DataProperties;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by angel on 6/9/2016.
@@ -70,7 +69,7 @@ public class SelectBlock extends AbstractQueryBlock {
 
 
     public void setOrdering(Ordering o) {
-        StructureProperties props = getOutputProperties();
+        DataProperties props = getOutputDataProperties();
         props.setOrdering(o);
         setOutputProperties(props);
     }

@@ -3,11 +3,10 @@ package org.semagrow.plan;
 import org.semagrow.plan.queryblock.*;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
- * Traverses the QueryBlock AST and extracts {@link InterestingProperties}
- * for each physical {@link org.eclipse.rdf4j.query.algebra.TupleExpr}
+ * Traverses the QueryBlock AST infers {@link InterestingProperties}
+ * and associates them to each {@link QueryBlock}
  * @author acharal
  * @since 2.0
  */
@@ -20,18 +19,18 @@ public class InterestingPropertiesVisitor extends AbstractQueryBlockVisitor<Runt
 
         InterestingProperties props = coverWithOutput(b, intProps);
 
-        b.setIntProps(props);
+        b.setInterestingProperties(props);
 
         InterestingProperties inputProps = props.clone();
 
         if (b.getDuplicateStrategy() == OutputStrategy.ENFORCE) {
-            inputProps.addStructureProperties(RequestedStructureProperties.forGrouping(b.getOutputVariables()));
+            inputProps.addStructureProperties(RequestedDataProperties.forGrouping(b.getOutputVariables()));
         }
 
         for (Quantifier q : b.getQuantifiers()) {
             intProps = homogenize(inputProps, q.getBlock().getOutputVariables());
 
-            // determine interesting orderings arising from merge-joins
+            //TODO: determine interesting orderings arising from merge-joins
 
             q.getBlock().visit(this);
         }
@@ -42,10 +41,10 @@ public class InterestingPropertiesVisitor extends AbstractQueryBlockVisitor<Runt
 
         InterestingProperties props = coverWithOutput(b, intProps);
 
-        b.setIntProps(props);
+        b.setInterestingProperties(props);
 
         InterestingProperties inputProps = props.clone();
-        inputProps.addStructureProperties(RequestedStructureProperties.forGrouping(b.getGroupedVariables()));
+        inputProps.addStructureProperties(RequestedDataProperties.forGrouping(b.getGroupedVariables()));
 
         intProps = homogenize(inputProps, b.getOutputVariables());
 
@@ -54,33 +53,52 @@ public class InterestingPropertiesVisitor extends AbstractQueryBlockVisitor<Runt
 
     @Override
     public void meet(UnionBlock b) {
-        b.setIntProps(intProps);
+        b.setInterestingProperties(intProps);
         super.meet(b);
     }
 
     @Override
     public void meet(IntersectionBlock b) {
-        b.setIntProps(intProps);
+        b.setInterestingProperties(intProps);
         super.meet(b);
     }
 
     @Override
     public void meet(MinusBlock b) {
-        b.setIntProps(intProps);
+        b.setInterestingProperties(intProps);
         super.meet(b);
+    }
+
+    @Override
+    public void meet(PatternBlock b) {
+        b.setInterestingProperties(intProps);
+    }
+
+    @Override
+    public void meet(BindingSetAssignmentBlock b) {
+        b.setInterestingProperties(intProps);
     }
 
     protected InterestingProperties coverWithOutput(QueryBlock b, InterestingProperties intProps) {
 
         InterestingProperties props = new InterestingProperties();
-        StructureProperties outputReqs = b.getOutputProperties();
+
+        // output requirements are the properties that will be forced by the block anyway
+        DataProperties outputReqs = b.getOutputDataProperties();
+
+        // therefore they are ``interesting'' in any case.
         props.addStructureProperties(outputReqs.asRequestedProperties());
 
-        for (RequestedStructureProperties reqProps : intProps.getStructureProperties()) {
+        // check if there are any inherited interesting properties that are covered by the output requirements
+        // if so, then there is no need to include them, since the operator will satisfy them by default
+
+        for (RequestedDataProperties reqProps : intProps.getStructureProperties()) {
             if (!reqProps.isCoveredBy(outputReqs)) {
                 props.addStructureProperties(reqProps);
             }
         }
+
+        // assure the set does not contain any trivial requested properties
         props.dropTrivials();
 
         return props;
@@ -89,4 +107,5 @@ public class InterestingPropertiesVisitor extends AbstractQueryBlockVisitor<Runt
     protected InterestingProperties homogenize(InterestingProperties props, Collection<String> variables) {
         return props;
     }
+
 }

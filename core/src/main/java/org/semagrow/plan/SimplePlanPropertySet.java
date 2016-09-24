@@ -20,7 +20,7 @@ public class SimplePlanPropertySet implements PlanPropertySet {
 
     private Site site;
 
-    private StructureProperties structProps;
+    private DataProperties structProps;
 
     @Override
     public long getCardinality() { return cardinality; }
@@ -38,12 +38,12 @@ public class SimplePlanPropertySet implements PlanPropertySet {
     public void setSite(Site site) { this.site = site; }
 
     @Override
-    public StructureProperties getStructureProperties() {
+    public DataProperties getStructureProperties() {
         return structProps;
     }
 
     @Override
-    public void setStructureProperties(StructureProperties ordering) {
+    public void setStructureProperties(DataProperties ordering) {
         structProps = ordering;
     }
 

@@ -3,7 +3,7 @@ package org.semagrow.plan.queryblock;
 import org.semagrow.plan.InterestingProperties;
 import org.semagrow.plan.Plan;
 import org.semagrow.plan.PlanCollection;
-import org.semagrow.plan.StructureProperties;
+import org.semagrow.plan.DataProperties;
 
 import java.util.Set;
 
@@ -24,9 +24,9 @@ public interface QueryBlock {
      * Get the structure properties that are enforced by this query block on its output
      * @return the structure properties of the output (if any). If the block does not
      *         impose any properties on its output then the returned properties are trivial.
-     * @see StructureProperties::isTrivial
+     * @see DataProperties ::isTrivial
      */
-    StructureProperties getOutputProperties();
+    DataProperties getOutputDataProperties();
 
     /**
      * Infer the fact that the output may contain duplicates.
@@ -59,13 +59,13 @@ public interface QueryBlock {
      * with this query block
      * @return the associated interesting properties
      */
-    InterestingProperties getIntProps();
+    InterestingProperties getInterestingProperties();
 
     /**
      * Associates a set of interesting properties with this block
      * @param intProps the interesting properties to associate with
      */
-    void setIntProps(InterestingProperties intProps);
+    void setInterestingProperties(InterestingProperties intProps);
 
     <X extends Exception> void visit(QueryBlockVisitor<X> visitor) throws X;
 
@@ -74,4 +74,5 @@ public interface QueryBlock {
     PlanCollection getPlans();
 
     Plan getBestPlan();
+
 }

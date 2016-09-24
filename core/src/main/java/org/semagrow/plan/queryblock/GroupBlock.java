@@ -2,10 +2,8 @@ package org.semagrow.plan.queryblock;
 
 import com.google.common.collect.Sets;
 import org.eclipse.rdf4j.query.algebra.AggregateOperator;
-import org.eclipse.rdf4j.query.algebra.ValueExpr;
 import org.semagrow.plan.Plan;
 import org.semagrow.plan.PlanCollection;
-import org.semagrow.plan.StructureProperties;
 
 import java.util.*;
 
