@@ -15,7 +15,6 @@ public class RequestedGlobalDataProperties {
 
     Optional<Ordering> ordering;
 
-
     public RequestedGlobalDataProperties() {
         partitioningScheme = PartitioningScheme.RANDOM;
     }
@@ -46,12 +45,10 @@ public class RequestedGlobalDataProperties {
 
         if (this.partitioningScheme.isCoveredBy(other.partitioningScheme)) {
 
-            if (other.partitioningScheme.isPartitionedOnKey()) {
+            if (this.partitioningScheme == PartitioningScheme.HASH_PARTITIONING) {
                 // if other is partitioned at least on the variables of this
                 return other.isPartitionedOnVariables(this.partitioningVariables);
-            }
-
-            if (this.partitioningScheme == PartitioningScheme.RANGE_PARTITIONING) {
+            } else if (this.partitioningScheme == PartitioningScheme.RANGE_PARTITIONING) {
                 // check ordering
             }
         }
