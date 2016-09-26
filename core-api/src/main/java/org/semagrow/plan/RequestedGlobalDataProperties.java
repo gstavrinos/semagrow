@@ -19,22 +19,6 @@ public class RequestedGlobalDataProperties {
         partitioningScheme = PartitioningScheme.RANDOM;
     }
 
-    public void setHashPartitioned(Set<String> partitioningFields) {
-        this.partitioningScheme    = PartitioningScheme.HASH_PARTITIONING;
-        this.partitioningVariables = partitioningFields;
-        this.ordering = Optional.empty();
-    }
-
-    public void setRangePartitioned(Ordering ordering) {
-        this.partitioningScheme = PartitioningScheme.RANGE_PARTITIONING;
-        this.ordering = Optional.of(ordering);
-    }
-
-    public void setAnyPartitioned(Set<String> partitioningFields) {
-        this.partitioningScheme    = PartitioningScheme.ANY_PARTITIONING;
-        this.partitioningVariables = partitioningFields;
-    }
-
     public PartitioningScheme getPartitioningScheme() { return partitioningScheme; }
 
     public boolean isTrivial() {
@@ -43,14 +27,23 @@ public class RequestedGlobalDataProperties {
 
     public boolean isCoveredBy(GlobalDataProperties other) {
 
-        if (this.partitioningScheme.isCoveredBy(other.partitioningScheme)) {
+        if (this.partitioningScheme == PartitioningScheme.HASH_PARTITIONING &&
+            other.partitioningScheme == PartitioningScheme.HASH_PARTITIONING) {
+            // if other is partitioned at least on the variables of this
+            return other.isPartitionedOnVariables(this.partitioningVariables);
 
-            if (this.partitioningScheme == PartitioningScheme.HASH_PARTITIONING) {
-                // if other is partitioned at least on the variables of this
-                return other.isPartitionedOnVariables(this.partitioningVariables);
-            } else if (this.partitioningScheme == PartitioningScheme.RANGE_PARTITIONING) {
-                // check ordering
-            }
+        } else if (this.partitioningScheme == PartitioningScheme.RANGE_PARTITIONING &&
+                other.partitioningScheme == PartitioningScheme.RANGE_PARTITIONING) {
+            return other.matchesOrderedPartitioning(this.ordering);
+
+        } else if (this.partitioningScheme == PartitioningScheme.ANY_PARTITIONING &&
+                   other.partitioningScheme.isPartitionedOnKey())
+        {
+            return other.isPartitionedOnVariables(this.partitioningVariables);
+        } else if (this.partitioningScheme == PartitioningScheme.RANDOM) {
+            return other.partitioningScheme == PartitioningScheme.RANDOM;
+        } else if (this.partitioningScheme == PartitioningScheme.REPLICATE) {
+            return other.partitioningScheme == PartitioningScheme.REPLICATE;
         }
 
         return false;

@@ -63,6 +63,27 @@ public class Ordering implements Cloneable {
         return true;
     }
 
+    public Iterator<OrderedVariable> getOrderedVariables() {
+        return new Iterator<OrderedVariable>() {
+
+            private Iterator<Order> oit = orders.iterator();
+
+            private Iterator<String> vit = variables.iterator();
+
+            public boolean hasNext() {
+                return oit.hasNext() && vit.hasNext();
+            }
+
+            public OrderedVariable next() {
+                return new OrderedVariable(vit.next(), oit.next());
+            }
+        };
+    }
+
+    public Set<String> getVariables() {
+        return new HashSet<>(variables);
+    }
+
     @Override
     public Ordering clone() {
 
@@ -123,4 +144,26 @@ public class Ordering implements Cloneable {
         return buffer.toString();
     }
 
+    public class OrderedVariable {
+
+        private String var;
+
+        private Order order;
+
+        public OrderedVariable(String var, Order o) {
+            this.var = var;
+            this.order = o;
+        }
+
+        public String getVariable(){ return var; }
+
+        public Order getOrder() {return order; }
+
+        public boolean isCoveredBy(OrderedVariable other) {
+            if (this.getVariable().equals(other.getVariable()))
+                return this.order.isCoveredBy(other.order);
+            else
+                return false;
+        }
+    }
 }

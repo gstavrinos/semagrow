@@ -1,5 +1,6 @@
 package org.semagrow.plan;
 
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -10,9 +11,37 @@ public class GlobalDataProperties {
 
     PartitioningScheme partitioningScheme;
 
-    Set<String> partitioningFields;
+    Set<String> partitioningVariables;
 
     Optional<Ordering> ordering;
+
+    public void setHashPartitioned(Set<String> partitioningFields) {
+        this.partitioningScheme    = PartitioningScheme.HASH_PARTITIONING;
+        this.partitioningVariables = partitioningFields;
+        this.ordering = Optional.empty();
+    }
+
+    public void setRangePartitioned(Ordering ordering) {
+        this.partitioningScheme = PartitioningScheme.RANGE_PARTITIONING;
+        this.partitioningVariables = ordering.getVariables();
+        this.ordering = Optional.of(ordering);
+    }
+
+    public void setAnyPartitioned(Set<String> partitioningFields) {
+        this.partitioningScheme    = PartitioningScheme.ANY_PARTITIONING;
+        this.partitioningVariables = partitioningFields;
+        this.ordering = Optional.empty();
+    }
+
+    public void setRandomPartitioned() {
+        this.partitioningScheme = PartitioningScheme.RANDOM;
+        this.ordering = Optional.empty();
+    }
+
+    public void setReplication() {
+        this.partitioningScheme = PartitioningScheme.REPLICATE;
+        this.ordering = Optional.empty();
+    }
 
     /**
      * Checks whether the data properties are partitioned on a key and if so,
@@ -28,8 +57,38 @@ public class GlobalDataProperties {
      *         it is partitioned in some variables that are not in {@code variables}
      */
     public boolean isPartitionedOnVariables(Set<String> variables) {
+        // FIXME: Treat the case where this is ordered and not just hash-partitioned
+
         if (partitioningScheme.isPartitionedOnKey()) {
-            variables.containsAll(partitioningFields);
+            variables.containsAll(partitioningVariables);
+        }
+        return false;
+    }
+
+    public boolean matchesOrderedPartitioning(Optional<Ordering> ordering) {
+
+        if (partitioningScheme == PartitioningScheme.RANGE_PARTITIONING) {
+            Ordering tord = this.ordering.get();
+            Ordering oord = ordering.get();
+
+            Iterator<Ordering.OrderedVariable> tit  = tord.getOrderedVariables();
+            Iterator<Ordering.OrderedVariable> oit  = oord.getOrderedVariables();
+
+            while (oit.hasNext()) {
+                if (tit.hasNext()) {
+                    Ordering.OrderedVariable oo = oit.next();
+                    Ordering.OrderedVariable to = tit.next();
+
+                    if (!oo.isCoveredBy(to)) {
+                        // stop and return failure
+                        return false;
+                    }
+                } else {
+                    // we finished this.ordering without finishing other.ordering
+                    // this means that the partitions are ordered with less columns than requested.
+                    return true;
+                }
+            }
         }
         return false;
     }
