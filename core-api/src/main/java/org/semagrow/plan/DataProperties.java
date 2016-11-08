@@ -26,6 +26,11 @@ public class DataProperties {
      */
     Set<Set<String>> uniqueFields = new HashSet<>();
 
+    public DataProperties() {
+        ordering = Optional.empty();
+        groupedFields = Optional.empty();
+    }
+
     public void setGrouping(Set<String> groupedFields) {
         this.groupedFields = Optional.of(new HashSet<>(groupedFields));
     }
@@ -33,6 +38,8 @@ public class DataProperties {
     public void setOrdering(Ordering o) {
         this.ordering = Optional.of(o);
     }
+
+    public boolean hasOrdering() { return this.ordering.isPresent(); }
 
     public void addUnique(Set<String> unique) {
         // FIXME: Check if there is already a superset of unique

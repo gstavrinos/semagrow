@@ -16,7 +16,7 @@ import java.util.Collection;
  * @author Angelos Charalambidis
  * @author Stasinos Konstantopoulos
  */
-
+@Deprecated
 public class DecomposerContext
 {
 	public static final long LIMIT_NONE = -2;

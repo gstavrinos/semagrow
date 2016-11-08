@@ -26,6 +26,6 @@ public interface PlanFactory {
      * any derived properties from the operators of {@code physicalExpr}. The derived
      * properties may overwrite any conficting properties in {@code props}
      */
-    Plan create(TupleExpr physicalExpr, PlanPropertySet props);
+    Plan create(TupleExpr physicalExpr, PlanProperties props);
 
 }

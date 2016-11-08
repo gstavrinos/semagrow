@@ -11,6 +11,7 @@ import org.semagrow.selector.Site;
  * @author acharal
  * @since 2.0
  */
+@Deprecated
 public class SimplePlanFactory implements PlanFactory {
 
     private final CostEstimatorResolver costEstimatorResolver;
@@ -26,13 +27,13 @@ public class SimplePlanFactory implements PlanFactory {
 
 
     public Plan create(TupleExpr expr) {
-        return create(expr, SimplePlanPropertySet.defaultProperties());
+        return create(expr, PlanProperties.defaultProperties());
     }
 
 
-    public Plan create(TupleExpr expr, PlanPropertySet initialProps)
+    public Plan create(TupleExpr expr, PlanProperties initialProps)
     {
-        PlanPropertySet props = PlanPropertiesUpdater.process(expr, initialProps);
+        PlanProperties props = PlanPropertiesUpdater.process(expr, initialProps);
 
         Site s = props.getSite();
 

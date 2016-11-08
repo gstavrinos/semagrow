@@ -112,7 +112,7 @@ public class SimplePlanGenerator implements PlanGenerator, PlanGenerationContext
 
 
     @Override
-    public PlanCollection finalizePlans(PlanCollection plans, PlanPropertySet properties)
+    public PlanCollection finalizePlans(PlanCollection plans, PlanProperties properties)
     {
         return plans.stream()
                 .map(p -> enforce(p, LocalSite.getInstance()))
@@ -214,7 +214,7 @@ public class SimplePlanGenerator implements PlanGenerator, PlanGenerationContext
     {
         Site site = metadata.getSites().iterator().next();
 
-        PlanPropertySet prop = SimplePlanPropertySet.defaultProperties();
+        PlanProperties prop = PlanProperties.defaultProperties();
         prop.setSite(site);
 
         return planFactory.create(innerExpr, prop);

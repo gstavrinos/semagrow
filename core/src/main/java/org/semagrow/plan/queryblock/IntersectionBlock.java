@@ -1,13 +1,12 @@
 package org.semagrow.plan.queryblock;
 
+import org.eclipse.rdf4j.query.algebra.Intersection;
+import org.semagrow.plan.CompilerContext;
 import org.semagrow.plan.Plan;
-import org.semagrow.plan.PlanCollection;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by angel on 7/9/2016.
@@ -17,8 +16,8 @@ public class IntersectionBlock extends AbstractQueryBlock {
     private Collection<QueryBlock> blocks;
 
     public IntersectionBlock(QueryBlock...block) {
-        blocks = Collections.emptyList();
-        this.addAll(Arrays.asList(block));
+        List<QueryBlock> blocks = Arrays.asList(block);
+        this.blocks = new ArrayList<>(blocks);
     }
 
     public Set<String> getOutputVariables() {
@@ -44,14 +43,31 @@ public class IntersectionBlock extends AbstractQueryBlock {
             // if intersection preserves the duplicates then
             // the only case that there are no duplicates is when
             // all its constituent blocks do not have duplicates.
-            return !blocks.stream().noneMatch(b -> b.hasDuplicates());
+            return !blocks.stream().noneMatch(QueryBlock::hasDuplicates);
         } else {
             return true;
         }
     }
 
-    public PlanCollection getPlans() { return null; }
+    public Collection<Plan> getPlans(CompilerContext context) {
 
-    public Plan getBestPlan() { return null; }
+        Stream<Collection<Plan>> plans = blocks.stream().map(b -> b.getPlans(context));
+
+        //FIXME: Check the Site property
+        Collection<Plan> planAlternatives = plans.reduce((p1, p2) -> getIntersectionPlan(context,p1,p2))
+                .orElse(Collections.emptyList());
+
+        //FIXME: prune if necessary
+        // prune plan Alternatives
+        return planAlternatives;
+    }
+
+    public Collection<Plan> getIntersectionPlan(CompilerContext context, Collection<Plan> p1, Collection<Plan> p2) {
+        return p1.stream().flatMap( pp1 ->
+                p2.stream().flatMap(pp2 ->
+                        Stream.of(context.asPlan(new Intersection(pp1, pp2)))
+                )
+        ).collect(Collectors.toList());
+    }
 
 }

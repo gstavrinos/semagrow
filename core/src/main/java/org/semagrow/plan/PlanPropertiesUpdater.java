@@ -16,13 +16,13 @@ import java.util.Set;
  */
 public class PlanPropertiesUpdater extends AbstractPlanVisitor<RuntimeException> {
 
-    private PlanPropertySet properties = SimplePlanPropertySet.defaultProperties();
+    private PlanProperties properties = PlanProperties.defaultProperties();
 
-    static public PlanPropertySet process(TupleExpr expr) {
-        return process(expr, SimplePlanPropertySet.defaultProperties());
+    static public PlanProperties process(TupleExpr expr) {
+        return process(expr, PlanProperties.defaultProperties());
     }
 
-    static public PlanPropertySet process(TupleExpr expr, PlanPropertySet initialProperties) {
+    static public PlanProperties process(TupleExpr expr, PlanProperties initialProperties) {
 
         PlanPropertiesUpdater updater  = new PlanPropertiesUpdater();
         updater.properties = initialProperties;
@@ -78,14 +78,14 @@ public class PlanPropertiesUpdater extends AbstractPlanVisitor<RuntimeException>
     @Override
     public void meet(BindJoin join) throws RuntimeException  {
         join.getLeftArg().visit(this);
-        PlanPropertySet leftProperties = this.properties;
+        PlanProperties leftProperties = this.properties;
     }
 
     @Override
     public void meet(HashJoin join) throws RuntimeException  {
 
         join.getLeftArg().visit(this);
-        PlanPropertySet leftProperties = this.properties;
+        PlanProperties leftProperties = this.properties;
 
         join.getRightArg().visit(this);
 

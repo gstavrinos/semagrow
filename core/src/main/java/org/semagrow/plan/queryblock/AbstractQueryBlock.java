@@ -1,10 +1,8 @@
 package org.semagrow.plan.queryblock;
 
-import org.semagrow.plan.InterestingProperties;
-import org.semagrow.plan.Plan;
-import org.semagrow.plan.PlanCollection;
-import org.semagrow.plan.DataProperties;
+import org.semagrow.plan.*;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -12,7 +10,7 @@ import java.util.Set;
  */
 public abstract class AbstractQueryBlock implements QueryBlock {
 
-    private InterestingProperties intProps;
+    private InterestingProperties intProps = new InterestingProperties();
 
     private OutputStrategy duplicateStrategy = OutputStrategy.PRESERVE;
 
@@ -47,10 +45,7 @@ public abstract class AbstractQueryBlock implements QueryBlock {
     public abstract Set<String> getOutputVariables();
 
     @Override
-    public abstract PlanCollection getPlans();
-
-    @Override
-    public abstract Plan getBestPlan();
+    public abstract Collection<Plan> getPlans(CompilerContext context);
 
     @Override
     public <X extends Exception> void visit(QueryBlockVisitor<X> visitor) throws X {

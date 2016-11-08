@@ -250,8 +250,7 @@ public class QueryBlockBuilder extends AbstractQueryModelVisitor<RuntimeExceptio
             if (elem.getExpr() instanceof AggregateOperator) {
                 // ignore aggregate operators. These are included in the GroupBlock
             } else {
-                ValueExpr ext = elem.getExpr().clone();
-                ext.visit(new VarReplacer(q));
+                ValueExpr ext = VarReplacer.process(elem.getExpr(), q);
                 selectBlock.addProjection(elem.getName(), ext);
             }
         }
@@ -281,8 +280,7 @@ public class QueryBlockBuilder extends AbstractQueryModelVisitor<RuntimeExceptio
 
             if (handler.hasLhs()) {
 
-                ValueExpr lhs = handler.getLhs().clone();
-                lhs.visit(new VarReplacer(q));
+                ValueExpr lhs = VarReplacer.process(handler.getLhs(), q);
 
                 Optional<Quantifier.Var> v  = subQ.getVariables().stream().findFirst();
 
@@ -294,8 +292,7 @@ public class QueryBlockBuilder extends AbstractQueryModelVisitor<RuntimeExceptio
 
         } else {
 
-            ValueExpr ee = e.getCondition().clone();
-            ee.visit(new VarReplacer(q));
+            ValueExpr ee = VarReplacer.process(e.getCondition(), q);
             selectBlock.addPredicate(new ThetaJoinPredicate(ee));
         }
 
@@ -385,10 +382,9 @@ public class QueryBlockBuilder extends AbstractQueryModelVisitor<RuntimeExceptio
         Optional<ValueExpr> cond = Optional.empty();
 
         if (e.hasCondition()) {
-           ValueExpr c = e.getCondition().clone();
-           c.visit(new VarReplacer(f));
-           c.visit(new VarReplacer(t));
-           cond = Optional.of(c);
+            ValueExpr c = VarReplacer.process(e.getCondition(), f);
+            c = VarReplacer.process(c, t);
+            cond = Optional.of(c);
         }
 
         for (String v : vars) {
@@ -422,7 +418,8 @@ public class QueryBlockBuilder extends AbstractQueryModelVisitor<RuntimeExceptio
         return "_new_" + UUID.randomUUID().toString().replaceAll("-", "_");
     }
 
-    private class VarReplacer extends AbstractQueryModelVisitor<RuntimeException> {
+    /* Replaces */
+    static private class VarReplacer extends AbstractQueryModelVisitor<RuntimeException> {
 
         private Quantifier q;
 
@@ -436,6 +433,38 @@ public class QueryBlockBuilder extends AbstractQueryModelVisitor<RuntimeExceptio
                     var.replaceWith(qvar.get());
             }
         }
+
+        public static <X extends QueryModelNode> X process(X node, Quantifier q) {
+            VarReplacer replacer = new VarReplacer(q);
+            X clone = (X) node.clone();
+            DummyParent<X> parent = new DummyParent<>(clone);
+            clone.visit(replacer);
+            return parent.getChild();
+        }
+
+        static private class DummyParent<X extends QueryModelNode> extends AbstractQueryModelNode {
+
+            private X child;
+
+            public DummyParent(X child) {
+                this.child = child;
+                this.child.setParentNode(this);
+            }
+
+            public X getChild() { return child; }
+
+            public void replaceChildNode(QueryModelNode current, QueryModelNode replacement) {
+                if (current == child) {
+                    child = (X) replacement;
+                }
+            }
+
+            @Override
+            public <Y extends Exception> void visit(QueryModelVisitor<Y> queryModelVisitor) throws Y {
+                child.visit(queryModelVisitor);
+            }
+        }
+
     }
 
     private class SubQueryHandler {

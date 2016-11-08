@@ -1,9 +1,12 @@
 package org.semagrow.plan.queryblock;
 
 import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.algebra.BindingSetAssignment;
+import org.semagrow.plan.CompilerContext;
 import org.semagrow.plan.Plan;
-import org.semagrow.plan.PlanCollection;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -28,8 +31,11 @@ public class BindingSetAssignmentBlock extends AbstractQueryBlock {
 
     public boolean hasDuplicates() { return true; }
 
-    public PlanCollection getPlans() { return null; }
-
-    public Plan getBestPlan() { return null; }
+    public Collection<Plan> getPlans(CompilerContext context) {
+        BindingSetAssignment expr = new BindingSetAssignment();
+        expr.setBindingNames(bindingNames);
+        expr.setBindingSets(bindingSets);
+        return Collections.singleton(context.asPlan(expr));
+    }
 
 }

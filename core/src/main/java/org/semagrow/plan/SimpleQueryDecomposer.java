@@ -31,7 +31,7 @@ import java.util.Optional;
  * @author Angelos Charalambidis
  * @author Stasinos Konstantopoulos
  */
-
+@Deprecated
 public class SimpleQueryDecomposer implements QueryDecomposer
 {
 

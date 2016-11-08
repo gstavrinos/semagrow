@@ -32,9 +32,14 @@ public class SelectMergeVisitor extends AbstractQueryBlockVisitor<RuntimeExcepti
         {
             SelectBlock lower = (SelectBlock) q.getBlock();
 
-            return !upper.hasDuplicates()
+            boolean duplicateConstraint = !upper.hasDuplicates()
                     ||  upper.getDuplicateStrategy() == OutputStrategy.ENFORCE
                     ||  lower.getDuplicateStrategy() != OutputStrategy.ENFORCE;
+
+            boolean ordering = lower.getOutputDataProperties().hasOrdering() &&
+                               !upper.getOutputDataProperties().hasOrdering();
+
+            return duplicateConstraint && !ordering;
         }
 
         return false;
@@ -188,12 +193,15 @@ public class SelectMergeVisitor extends AbstractQueryBlockVisitor<RuntimeExcepti
                         boolean inNullProducingSide = jp.getTo().getQuantifier().equals(entry.getKey().getQuantifier());
 
                         jp.replaceVarWith(entry.getKey(), (Quantifier.Var) entry.getValue());
+                        jp.getEEL().remove(q);
 
                         if (inNullProducingSide) {
                             Quantifier q = jp.getTo().getQuantifier();
                             SelectBlock qb = (SelectBlock) q.getBlock();
                             Collection<Quantifier> qs = qb.getQuantifiers();
                             jp.getEEL().addAll(qs);
+                        } else {
+                            jp.getEEL().add(((Quantifier.Var) entry.getValue()).getQuantifier());
                         }
 
                     } else {

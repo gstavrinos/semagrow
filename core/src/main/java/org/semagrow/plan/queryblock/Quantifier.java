@@ -4,14 +4,11 @@ import org.eclipse.rdf4j.query.algebra.AbstractQueryModelNode;
 import org.eclipse.rdf4j.query.algebra.QueryModelVisitor;
 import org.eclipse.rdf4j.query.algebra.ValueExpr;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Quantifier represents the way that a {@link QueryBlock} can range.
- * {@link Quantifier.Quantification.ALL} and {@link Quantifier.Quantification.ANY} are provisioned
+ * {@link Quantifier.Quantification::ALL} and {@link Quantifier.Quantification::ANY} are provisioned
  * for nested queries.
  * @author acharal
  */
@@ -142,5 +139,30 @@ public class Quantifier {
     public Quantification getQuantification() { return quantification; }
 
     public boolean isFrom() { return getQuantification() == Quantification.EACH; }
+
+    public Collection<Quantifier> dependsOn() {
+        DependencyVisitor visitor = new DependencyVisitor();
+        block.visit(visitor);
+        return visitor.external;
+    }
+
+    private class DependencyVisitor extends AbstractQueryBlockVisitor<RuntimeException> {
+
+        Collection<Quantifier> external = new HashSet<>();
+
+        public void meet(SelectBlock block) {
+            super.meet(block);
+
+            external.removeAll(block.getQuantifiers());
+
+            Collection<Predicate> predicates = block.getPredicates();
+            for (Predicate p : predicates) {
+                Collection<Quantifier> qc = new HashSet<>(p.getEEL());
+                qc.removeAll(block.getQuantifiers());
+                external.addAll(qc);
+            }
+        }
+
+    }
 
 }

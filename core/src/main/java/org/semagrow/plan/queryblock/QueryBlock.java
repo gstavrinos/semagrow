@@ -1,10 +1,8 @@
 package org.semagrow.plan.queryblock;
 
-import org.semagrow.plan.InterestingProperties;
-import org.semagrow.plan.Plan;
-import org.semagrow.plan.PlanCollection;
-import org.semagrow.plan.DataProperties;
+import org.semagrow.plan.*;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -71,8 +69,6 @@ public interface QueryBlock {
 
     <X extends Exception> void visitChildren(QueryBlockVisitor<X> visitor) throws X;
 
-    PlanCollection getPlans();
-
-    Plan getBestPlan();
+    Collection<Plan> getPlans(CompilerContext context);
 
 }

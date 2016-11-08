@@ -33,6 +33,7 @@ public class InterestingProperties implements Cloneable {
         globalProps.addAll(props.globalProps);
     }
 
+
     public Set<RequestedDataProperties> getStructureProperties() {
         return dataProps;
     }

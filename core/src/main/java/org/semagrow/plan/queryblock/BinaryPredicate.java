@@ -43,6 +43,6 @@ public abstract class BinaryPredicate implements Predicate {
                 .distinct().collect(Collectors.toSet());
     }
 
-    public Collection<Quantifier> getEEL() { return getEEL(); }
+    public Collection<Quantifier> getEEL() { return getEL(); }
 
 }

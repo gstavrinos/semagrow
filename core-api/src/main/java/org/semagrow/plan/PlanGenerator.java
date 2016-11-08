@@ -37,6 +37,6 @@ public interface PlanGenerator {
      * @return a collection of plans that contain the given plans altered in such a way to satisfy
      * the desired properties.
      */
-    PlanCollection finalizePlans(PlanCollection plans, PlanPropertySet desiredProperties);
+    PlanCollection finalizePlans(PlanCollection plans, PlanProperties desiredProperties);
 
 }

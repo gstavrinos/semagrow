@@ -1,8 +1,11 @@
 package org.semagrow.plan;
 
-import org.eclipse.rdf4j.query.algebra.QueryModelVisitor;
-import org.eclipse.rdf4j.query.algebra.TupleExpr;
-import org.eclipse.rdf4j.query.algebra.UnaryTupleOperator;
+import org.eclipse.rdf4j.query.algebra.*;
+import org.eclipse.rdf4j.query.algebra.helpers.AbstractQueryModelVisitor;
+import org.eclipse.rdf4j.query.algebra.helpers.VarNameCollector;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A query plan is a subtree of physical operators that contain the
@@ -18,15 +21,27 @@ import org.eclipse.rdf4j.query.algebra.UnaryTupleOperator;
  */
 public class Plan extends UnaryTupleOperator {
 
-    private PlanPropertySet properties;
+    private PlanProperties properties;
 
     public Plan(TupleExpr arg) {
         super(arg);
+        setProperties(new PlanProperties());
     }
 
-    public PlanPropertySet getProperties() { return properties; }
+    public Plan(TupleExpr arg, PlanProperties props) {
+        super(arg);
+        setProperties(props);
+    }
 
-    public void setProperties(PlanPropertySet properties) { this.properties = properties; }
+    public PlanProperties getProperties() { return properties; }
+
+    public void setProperties(PlanProperties properties) { this.properties = properties; }
+
+    public Set<String> getOutputVariables() {
+        return VarNameCollector.process(getArg());
+    }
+
+    public boolean hasDuplicates() { return true; }
 
     public <X extends Exception> void visit(QueryModelVisitor<X> xQueryModelVisitor) throws X {
         //getArg().visit(xQueryModelVisitor);
@@ -38,10 +53,52 @@ public class Plan extends UnaryTupleOperator {
         StringBuilder sb = new StringBuilder(128);
 
         sb.append(super.getSignature());
-        sb.append("(cost=" + getProperties().getCost().toString());
-        sb.append(", card=" + getProperties().getCardinality());
-        sb.append(", site=" + getProperties().getSite() +")");
+
+        if (getProperties().getSite() != null)
+            sb.append("@" + getProperties().getSite());
+
+        sb.append("[");
+        if (getProperties().getCost() != null)
+            sb.append("costs " + getProperties().getCost().toString() + " ");
+
+        sb.append(getProperties().getCardinality()  + " tuples");
+
+        sb.append("]");
+
         return sb.toString();
+    }
+
+    private class OutputVarCollector extends AbstractQueryModelVisitor<RuntimeException> {
+
+        private Set<String> variables = new HashSet<>();
+
+
+        @Override
+        public void meet(Var v) {
+            if (!v.isConstant())
+                variables.add(v.getName());
+        }
+
+        @Override
+        public void meet(Projection p) {
+            Set<String> vars = p.getProjectionElemList().getTargetNames();
+            variables.addAll(vars);
+        }
+
+        @Override
+        public void meet(Filter f) {
+            // skips visiting the condition of filter.
+            f.getArg().visit(this);
+        }
+
+        @Override
+        public void meetOther(QueryModelNode node) {
+            if (node instanceof Plan) {
+                variables.addAll(((Plan) node).getOutputVariables());
+            } else {
+                super.meetOther(node);
+            }
+        }
     }
 
 }

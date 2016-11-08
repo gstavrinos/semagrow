@@ -16,9 +16,9 @@ public class InnerJoinPredicate extends BinaryPredicate {
     public void replaceVarWith(Quantifier.Var v1, Quantifier.Var v2) {
 
         if (getFrom().equals(v1))
-            setFrom(v1);
+            setFrom(v2);
 
-        if (getTo().equals(v2))
+        if (getTo().equals(v1))
             setTo(v2);
     }
 
